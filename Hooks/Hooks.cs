@@ -10,16 +10,21 @@ namespace CFStest.Hooks
     {
         
         private readonly IObjectContainer _container;
+        private readonly ScenarioContext _scenarioContext;
 
-        public Hooks(IObjectContainer container)
+        public Hooks(IObjectContainer container, ScenarioContext scenarioContext)
         {
             _container = container;
+            _scenarioContext = scenarioContext;
         }
         
         [BeforeScenario]
         public void FirstBeforeScenario()
         {
             //TODO: implement homeic that has to run before executing each scenario
+            if (_scenarioContext.ScenarioInfo.Tags != null && _scenarioContext.ScenarioInfo.Tags.Contains("api"))
+                return;
+
             IWebDriver driver = new ChromeDriver();
             driver.Manage().Window.Maximize();
 
@@ -30,6 +35,9 @@ namespace CFStest.Hooks
         public void AfterScenario()
         {
             //TODO: implement homeic that has to run after executing each scenario
+            if (_scenarioContext.ScenarioInfo.Tags != null && _scenarioContext.ScenarioInfo.Tags.Contains("api"))
+                return;
+
             var driver =_container.Resolve<IWebDriver>();
             if(driver != null)
             {
